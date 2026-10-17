@@ -1,6 +1,6 @@
 {
   "name": "nestack",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "CLI to scaffold and evolve NestJS projects with DDD, Prisma, Zod, Swagger and Vitest",
   "type": "module",
   "bin": {
