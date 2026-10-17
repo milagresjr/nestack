@@ -11,12 +11,13 @@ export function writeSafe(path, content, { force = false } = {}) {
   return true
 }
 
-// Copia uma pasta de templates. "_x.tpl" vira ".x"; ".tpl" é removido.
+// Copia uma pasta de templates. "_x" vira ".x" (arquivos e diretórios); ".tpl" é removido.
 export function copyTree(src, dest, vars) {
+  const rename = (n) => n.replace(/^_/, '.').replace(/\.tpl$/, '')
   for (const entry of readdirSync(src)) {
     const from = join(src, entry)
-    if (statSync(from).isDirectory()) { copyTree(from, join(dest, entry), vars); continue }
-    const name = entry.replace(/^_/, '.').replace(/\.tpl$/, '')
-    writeSafe(join(dest, name), render(readFileSync(from, 'utf8'), vars), { force: true })
+    const to = join(dest, rename(entry))
+    if (statSync(from).isDirectory()) { copyTree(from, to, vars); continue }
+    writeSafe(to, render(readFileSync(from, 'utf8'), vars), { force: true })
   }
 }
