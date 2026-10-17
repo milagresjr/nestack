@@ -1,0 +1,27 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write # Obrigatório para OIDC (trusted publishing)
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+
+      - run: npm ci
+
+      # O npm detecta o ambiente OIDC automaticamente e publica com provenance.
+      - run: npm publish

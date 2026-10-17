@@ -103,6 +103,33 @@ nestack db:seed                          Atalho para prisma db seed
 - bcryptjs (hash)
 - JWT RS256 opcional
 
+## Publicação (mantenedores)
+
+O release é feito por tag, via GitHub Actions com **Trusted Publishing (OIDC)** (`.github/workflows/publish.yml`):
+
+```bash
+npm version patch   # ou minor/major (cria o commit e a tag)
+git push --follow-tags
+```
+
+O push da tag `v*` dispara o workflow, que publica no npm usando OIDC e gera provenance automaticamente (sem token).
+
+Pré-requisitos (uma vez):
+
+1. Publicar a primeira versão manualmente (`npm publish`).
+2. No npmjs.com → **Pacote → Settings → Trusted Publisher** → GitHub Actions, informar:
+   - Organization/user: `milagresjr`
+   - Repository: `nestack`
+   - Workflow filename: `publish.yml`
+   - Allowed actions: `npm publish`
+
+Equivalente via CLI (após a 1ª publicação):
+
+```bash
+npm trust github nestack --file publish.yml --repo milagresjr/nestack --allow-publish
+```
+
 ## Licença
 
 [MIT](./LICENSE) © Milagres Marques Luís Bartolomeu
+
