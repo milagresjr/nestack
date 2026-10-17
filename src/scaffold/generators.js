@@ -17,9 +17,11 @@ export function envFile(a, { example = false } = {}) {
   l.push(`DATABASE_URL="${a.databaseUrl}"`, 'PORT=3333')
   if (a.auth) l.push('', `JWT_PRIVATE_KEY="${v(a.keys.privateKey)}"`, `JWT_PUBLIC_KEY="${v(a.keys.publicKey)}"`)
   if (a.storage) {
-    const endpoint = a.storage === 'b2' ? 'https://s3.<regiao>.backblazeb2.com' : 'https://<account-id>.r2.cloudflarestorage.com'
+    // placeholders precisam ser URLs válidas: o zod rejeita "<regiao>" no boot
+    const endpoint = a.storage === 'b2' ? 'https://s3.us-east-1.backblazeb2.com' : 'https://exemplo.r2.cloudflarestorage.com'
+    const region = a.storage === 'b2' ? 'us-east-1' : 'auto'
     l.push('', `# ${a.storage === 'b2' ? 'Backblaze B2' : 'Cloudflare R2'} (S3-compatível)`, `STORAGE_ENDPOINT="${endpoint}"`,
-      `STORAGE_REGION="${a.storage === 'b2' ? '<regiao>' : 'auto'}"`, 'STORAGE_BUCKET=""', 'STORAGE_ACCESS_KEY_ID=""', 'STORAGE_SECRET_ACCESS_KEY=""')
+      `STORAGE_REGION="${region}"`, 'STORAGE_BUCKET=""', 'STORAGE_ACCESS_KEY_ID=""', 'STORAGE_SECRET_ACCESS_KEY=""')
   }
   if (a.cache) l.push('', `REDIS_HOST=127.0.0.1`, `REDIS_PORT=${a.redisPort}`, 'REDIS_DB=0')
   return l.join('\n') + '\n'
