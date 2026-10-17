@@ -8,7 +8,8 @@ import {
 import { ApiTags } from '@nestjs/swagger'
 import { CreateUserUseCase } from '@/domain/forum/application/use-cases/create-user'
 import { Public } from '../../auth/public'
-import { CreateUserBody, createUserBodySchema } from '../dtos/create-user.dto'
+import { createUserBodySchema } from '../dtos/create-user.dto'
+import type { CreateUserBody } from '../dtos/create-user.dto'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
 import { UserPresenter } from '../presenters/user-presenter'
 

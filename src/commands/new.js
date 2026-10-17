@@ -129,6 +129,7 @@ export function scaffold(dest, a) {
   w('src/infra/cryptography/cryptography.module.ts', g.cryptographyModule(a))
   w('.env', g.envFile(a))
   w('.env.example', g.envFile(a, { example: true }))
+  w('prisma.config.ts', g.prismaConfig())
   if (a.docker) w('compose.yaml', g.dockerCompose(a))
   for (const d of g.SKELETON_DIRS) writeSafe(join(dest, d, '.gitkeep'), '', { force: false })
 
@@ -150,6 +151,9 @@ function patchProject(dest) {
   }
   edit('package.json', (pkg) => {
     delete pkg.jest
+    // Nest 12 scaffolds ESM (type: module + nodenext), mas o template usa imports
+    // relativos sem extensão (padrão CJS). Voltamos para CJS.
+    delete pkg.type
     pkg.scripts = {
       ...pkg.scripts,
       postinstall: 'prisma generate',
@@ -162,12 +166,14 @@ function patchProject(dest) {
       'db:generate': 'prisma generate', 'db:migrate': 'prisma migrate dev',
       'db:deploy': 'prisma migrate deploy', 'db:seed': 'prisma db seed',
     }
-    pkg.prisma = { seed: 'tsx prisma/seed.ts' }
   })
   edit('nest-cli.json', (c) => { c.entryFile = 'infra/main' })
   edit('tsconfig.json', (ts) => {
-    ts.compilerOptions.baseUrl = './'
+    // TS 6 (padrão do Nest 12) deprecou baseUrl (TS5101); paths já são relativos.
+    delete ts.compilerOptions.baseUrl
     ts.compilerOptions.paths = { '@/*': ['./src/*'], 'generated/*': ['./src/generated/*'] }
+    // declaration: true (padrão do Nest 12) quebra o emit .d.ts do Prisma client (TS4094).
+    ts.compilerOptions.declaration = false
   })
   edit('tsconfig.build.json', (ts) => {
     ts.exclude = [...new Set([...(ts.exclude ?? []), 'src/test', 'prisma', 'vitest.config.ts', 'vitest.config.e2e.ts'])]

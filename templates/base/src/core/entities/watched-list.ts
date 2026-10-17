@@ -32,12 +32,22 @@ export abstract class WatchedList<T> {
   public exists(item: T) { return this.isCurrentItem(item) }
 
   public add(item: T) {
-    if (this.isRemovedItem(item)) this.removeFromRemoved(item)
+    const wasRemoved = this.isRemovedItem(item)
+    if (wasRemoved) this.removeFromRemoved(item)
     if (!this.isNewItem(item) && !this.wasAddedInitially(item)) this.new.push(item)
-    if (!this.isCurrentItem(item)) this.currentItems.push(item)
+    if (!this.isCurrentItem(item)) {
+      if (wasRemoved) {
+        const index = this.initial.findIndex((v) => this.compareItems(v, item))
+        const at = index === -1 ? this.currentItems.length : Math.min(index, this.currentItems.length)
+        this.currentItems.splice(at, 0, item)
+      } else {
+        this.currentItems.push(item)
+      }
+    }
   }
 
   public remove(item: T) {
+    if (!this.isCurrentItem(item)) return
     this.removeFromCurrent(item)
     if (this.isNewItem(item)) { this.removeFromNew(item); return }
     if (!this.isRemovedItem(item)) this.removed.push(item)

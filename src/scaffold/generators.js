@@ -38,7 +38,7 @@ export function dockerCompose(a) {
       POSTGRES_PASSWORD: \${DB_PASSWORD}
       POSTGRES_DB: \${DB_NAME}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U \${DB_USER} -d \${DB_NAME}"]
       interval: 3s
@@ -106,3 +106,18 @@ export const SKELETON_DIRS = [
   'src/infra/http/controllers', 'src/infra/http/dtos', 'src/infra/http/presenters',
   'src/test/factories', 'src/test/repositories', 'src/test/e2e', 'src/test/utils',
 ]
+
+// Substitui package.json#prisma (deprecated no Prisma 6.19, removido no 7).
+export function prismaConfig() {
+  return `import 'dotenv/config'
+import { defineConfig } from 'prisma/config'
+
+export default defineConfig({
+  schema: 'prisma/schema.prisma',
+  migrations: {
+    path: 'prisma/migrations',
+    seed: 'tsx prisma/seed.ts',
+  },
+})
+`
+}
