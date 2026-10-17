@@ -136,7 +136,7 @@ export function scaffold(dest, a) {
   const gi = join(dest, '.gitignore')
   const cur = existsSync(gi) ? readFileSync(gi, 'utf8') : ''
   if (!/^\.env$/m.test(cur)) appendFileSync(gi, '\n.env\n')
-  if (!/^\/src\/generated$/m.test(cur)) appendFileSync(gi, '\n/src/generated\n')
+  if (!/^\/generated$/m.test(cur)) appendFileSync(gi, '\n/generated\n')
 
   patchProject(dest)
 }
@@ -157,7 +157,8 @@ function patchProject(dest) {
     pkg.scripts = {
       ...pkg.scripts,
       postinstall: 'prisma generate',
-      'start:prod': 'node dist/infra/main',
+      // generated fica na raiz (fora de src/), então o dist replica src/ e generated/
+      'start:prod': 'node dist/src/infra/main',
       test: 'vitest run',
       'test:watch': 'vitest',
       'test:cov': 'vitest run --coverage',
@@ -167,15 +168,19 @@ function patchProject(dest) {
       'db:deploy': 'prisma migrate deploy', 'db:seed': 'prisma db seed',
     }
   })
-  edit('nest-cli.json', (c) => { c.entryFile = 'infra/main' })
+  // generated/ vive na raiz (fora de src/), então rootDir="." e o entry fica em dist/src/...
+  edit('nest-cli.json', (c) => { c.entryFile = 'src/infra/main' })
   edit('tsconfig.json', (ts) => {
     // TS 6 (padrão do Nest 12) deprecou baseUrl (TS5101); paths já são relativos.
     delete ts.compilerOptions.baseUrl
-    ts.compilerOptions.paths = { '@/*': ['./src/*'], 'generated/*': ['./src/generated/*'] }
+    ts.compilerOptions.paths = { '@/*': ['./src/*'], 'generated/*': ['./generated/*'] }
     // declaration: true (padrão do Nest 12) quebra o emit .d.ts do Prisma client (TS4094).
     ts.compilerOptions.declaration = false
   })
   edit('tsconfig.build.json', (ts) => {
+    // generated/ vive na raiz (fora de src/), então rootDir="." cobre src/ e generated/.
+    ts.compilerOptions.rootDir = '.'
+    ts.include = ['src', 'generated']
     ts.exclude = [...new Set([...(ts.exclude ?? []), 'src/test', 'prisma', 'vitest.config.ts', 'vitest.config.e2e.ts'])]
   })
 }

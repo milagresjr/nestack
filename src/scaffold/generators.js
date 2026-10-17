@@ -110,12 +110,18 @@ export const SKELETON_DIRS = [
 ]
 
 // Substitui package.json#prisma (deprecated no Prisma 6.19, removido no 7).
+// O schema mantém `url = env(...)` — no Prisma 6.x ele ainda é exigido.
+// O datasource daqui serve para os comandos de migrate usarem o engine classic.
 export function prismaConfig() {
   return `import 'dotenv/config'
-import { defineConfig } from 'prisma/config'
+import { defineConfig, env } from 'prisma/config'
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
+  engine: 'classic',
+  datasource: {
+    url: env('DATABASE_URL'),
+  },
   migrations: {
     path: 'prisma/migrations',
     seed: 'tsx prisma/seed.ts',
