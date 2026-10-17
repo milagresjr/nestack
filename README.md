@@ -1,80 +1,99 @@
 # nestack
 
+> CLI to **create and evolve NestJS projects** with **DDD** and **Prisma**.
+
+**English** · [Português (BR)](./README.pt-BR.md)
+
 [![npm version](https://img.shields.io/npm/v/nestack.svg)](https://www.npmjs.com/package/nestack)
+[![npm downloads](https://img.shields.io/npm/dm/nestack.svg)](https://www.npmjs.com/package/nestack)
 [![license](https://img.shields.io/npm/l/nestack.svg)](./LICENSE)
+[![node](https://img.shields.io/node/v/nestack.svg)](https://www.npmjs.com/package/nestack)
+[![website](https://img.shields.io/badge/website-milagresjr.github.io%2Fnestack-4c6ef5)](https://milagresjr.github.io/nestack/)
 
-CLI para criar e evoluir projetos NestJS com DDD e Prisma.
+`nestack` is a **NestJS CLI** that generates a project already structured with layered
+architecture (domain / infra), **Prisma with driver adapters** (`@prisma/adapter-pg`),
+Zod validation, Swagger docs, Vitest tests and optional JWT auth — and then keeps
+evolving it with code generators.
 
-Gera um projeto NestJS já estruturado com arquitetura em camadas (domain / infra),
-Prisma com driver adapter (`@prisma/adapter-pg`), validação com Zod, Swagger,
-testes com Vitest e autenticação JWT opcional.
+Live site: <https://milagresjr.github.io/nestack/>
 
-## Requisitos
+## Contents
+
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Create a project](#create-a-project)
+- [Generate code](#generate-code)
+- [Commands](#commands)
+- [Generated stack](#generated-stack)
+- [Maintainer publishing](#maintainer-publishing)
+- [License](#license)
+
+## Requirements
 
 - Node.js >= 18
 - npm
-- Docker (opcional, para subir o Postgres via `compose.yaml`)
+- Docker (optional, to run Postgres through `compose.yaml`)
 
-## Instalação
+## Installation
 
-Global:
+Globally:
 
 ```bash
 npm install -g nestack
 ```
 
-Ou use direto com `npx`:
+Or run it straight from `npx`:
 
 ```bash
-npx nestack new meu-app
+npx nestack new my-app
 ```
 
-## Criar um projeto
+## Create a project
 
 ```bash
-nestack new meu-app          # perguntas interativas
-nestack new meu-app --yes    # usa os padrões
+nestack new my-app          # interactive questions
+nestack new my-app --yes    # accept the defaults
 ```
 
-Durante a criação o CLI pergunta se você quer:
+While creating, the CLI asks whether you want:
 
-- Postgres via Docker (`compose.yaml`) e qual porta
-- Autenticação JWT (RS256)
-- Storage de arquivos (Cloudflare R2 ou Backblaze B2)
-- Cache com Redis
+- Postgres via Docker (`compose.yaml`) and on which port
+- JWT authentication (RS256)
+- File storage (Cloudflare R2 or Backblaze B2)
+- Redis cache
 
-Depois de criar:
+After creating it:
 
 ```bash
-cd meu-app
+cd my-app
 docker compose up -d --wait
 npx prisma migrate dev --name init
 npm run start:dev
 ```
 
-A API sobe em `http://localhost:3333` e o Swagger em `http://localhost:3333/docs`.
+The API runs at `http://localhost:3333` and Swagger at `http://localhost:3333/docs`.
 
-## Gerar código
+## Generate code
 
 ```bash
-nestack make:<tipo> <nome> [-m <modulo>]
+nestack make:<type> <name> [-m <module>]
 ```
 
-Tipos disponíveis:
+Available types:
 
-| Tipo         | Descrição                                        |
-| ------------ | ------------------------------------------------ |
-| `entity`     | Entidade de domínio                              |
-| `repository` | Contrato de repositório                          |
-| `use-case`   | Caso de uso                                      |
-| `controller` | Controller HTTP                                  |
-| `module`     | Módulo Nest                                      |
-| `dto`        | DTO (schema Zod)                                 |
-| `presenter`  | Presenter HTTP                                   |
-| `event`      | Evento de domínio                                |
-| `resource`   | Conjunto completo (entity, repo, use-case, etc.) |
+| Type         | Description                                     |
+| ------------ | ----------------------------------------------- |
+| `entity`     | Domain entity                                   |
+| `repository` | Repository contract                             |
+| `use-case`   | Use case                                        |
+| `controller` | HTTP controller                                 |
+| `module`     | Nest module                                     |
+| `dto`        | DTO (Zod schema)                                |
+| `presenter`  | HTTP presenter                                  |
+| `event`      | Domain event                                    |
+| `resource`   | Full set (entity, repo, use-case, ...)          |
 
-Exemplos:
+Examples:
 
 ```bash
 nestack make:entity user -m forum
@@ -83,61 +102,60 @@ nestack make:controller create-user -m forum
 nestack make:resource user -m forum
 ```
 
-## Comandos
+## Commands
 
 ```bash
-nestack new <nome> [--yes]               Cria um projeto Nest
-nestack make:<tipo> <nome> [--module=x]  Gera arquivo(s) com código base
-nestack migrate [nome]                   Atalho para prisma migrate dev
-nestack db:seed                          Atalho para prisma db seed
+nestack new <name> [--yes]               Create a Nest project
+nestack make:<type> <name> [--module=x]  Generate file(s) with base code
+nestack migrate [name]                   Shortcut for prisma migrate dev
+nestack db:seed                          Shortcut for prisma db seed
 ```
 
-## Stack gerada
+## Generated stack
 
 - NestJS
-- Prisma + `@prisma/adapter-pg` (driver adapter, sem binário de engine)
+- Prisma + `@prisma/adapter-pg` (driver adapter, no engine binary)
 - PostgreSQL
-- Zod (validação)
-- Swagger (documentação)
-- Vitest (testes)
-- bcryptjs (hash)
-- JWT RS256 opcional
+- Zod (validation)
+- Swagger (docs)
+- Vitest (tests)
+- bcryptjs (hashing)
+- Optional JWT RS256
 
-## Publicação (mantenedores)
+## Maintainer publishing
 
-O release é feito por tag. O GitHub Actions usa **Trusted Publishing (OIDC)** com
-**staged publishing** (`.github/workflows/publish.yml`): o CI envia a versão para a
-fila de staging e um mantenedor aprova com 2FA antes de ela ficar disponível.
+Releases are tag-based. GitHub Actions uses **Trusted Publishing (OIDC)** with
+**staged publishing** (`.github/workflows/publish.yml`): CI sends the version to the
+staging queue and a maintainer approves it with 2FA before it becomes available.
 
 ```bash
-npm version patch   # ou minor/major (cria o commit e a tag)
+npm version patch   # or minor/major (creates the commit and the tag)
 git push --follow-tags
 ```
 
-O push da tag `v*` dispara o workflow, que envia a versão para a fila usando OIDC
-(sem token e com provenance). Para liberar a versão:
+Pushing a `v*` tag triggers the workflow, which sends the version to the queue using
+OIDC (no token, with provenance). To release it:
 
-- npmjs.com → **Packages → nestack → Versions** (entrada em staging), ou
-- `npm stage approve <versão>`
+- npmjs.com → **Packages → nestack → Versions** (staged entry), or
+- `npm stage approve <version>`
 
-Pré-requisitos (uma vez):
+One-time prerequisites:
 
-1. Publicar a primeira versão manualmente (`npm publish`, exige 2FA na conta dona do
-   pacote no npm — hoje `milagrestobjr`).
-2. No npmjs.com → **Pacote → Settings → Trusted Publisher** → GitHub Actions, informar:
+1. Publish the first version manually (`npm publish`, requires 2FA on the npm account
+   that owns the package — today `milagrestobjr`).
+2. On npmjs.com → **Package → Settings → Trusted Publisher** → GitHub Actions, fill in:
    - Organization/user: `milagresjr`
    - Repository: `nestack`
    - Workflow filename: `publish.yml`
-   - Allowed actions: `npm stage publish` (já vem marcado; habilite `npm publish`
-     somente se quiser publicar direto, sem aprovação)
+   - Allowed actions: `npm stage publish` (already selected; enable `npm publish`
+     only if you want direct publishing without approval)
 
-Equivalente via CLI (após a 1ª publicação):
+CLI equivalent (after the first publish):
 
 ```bash
 npm trust github nestack --file publish.yml --repo milagresjr/nestack --allow-stage-publish
 ```
 
-## Licença
+## License
 
 [MIT](./LICENSE) © Milagres Marques Luís Bartolomeu
-

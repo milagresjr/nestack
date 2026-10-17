@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>nestack — CLI to create NestJS projects with DDD and Prisma</title>
+    <meta
+      name="description"
+      content="nestack: NestJS CLI to scaffold and evolve projects with DDD architecture, Prisma, Zod, Swagger, Vitest and optional JWT auth."
+    />
+    <meta
+      name="keywords"
+      content="nestack, NestJS CLI, NestJS, DDD, Prisma, scaffold, boilerplate, code generator, TypeScript, Node.js"
+    />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="Milagres Marques Luís Bartolomeu" />
+    <link rel="canonical" href="https://milagresjr.github.io/nestack/" />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://milagresjr.github.io/nestack/"
+    />
+    <link
+      rel="alternate"
+      hreflang="pt-BR"
+      href="https://milagresjr.github.io/nestack/pt/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://milagresjr.github.io/nestack/"
+    />
+
+    <meta
+      property="og:title"
+      content="nestack — CLI to create NestJS projects with DDD and Prisma"
+    />
+    <meta
+      property="og:description"
+      content="Scaffold and evolve NestJS projects with DDD architecture, Prisma driver adapters, Zod, Swagger, Vitest and optional JWT auth."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://milagresjr.github.io/nestack/" />
+    <meta property="og:site_name" content="nestack" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="nestack — CLI to create NestJS projects with DDD and Prisma"
+    />
+    <meta
+      name="twitter:description"
+      content="Scaffold and evolve NestJS projects with DDD architecture, Prisma driver adapters, Zod, Swagger, Vitest and optional JWT auth."
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "nestack",
+        "alternateName": "nestack CLI",
+        "description": "CLI to scaffold and evolve NestJS projects with DDD architecture, Prisma driver adapters, Zod validation, Swagger, Vitest and optional JWT authentication.",
+        "applicationCategory": "DeveloperApplication",
+        "applicationSubCategory": "Code generator",
+        "operatingSystem": "Node.js",
+        "programmingLanguage": "TypeScript",
+        "isAccessibleForFree": true,
+        "license": "https://spdx.org/licenses/MIT.html",
+        "url": "https://milagresjr.github.io/nestack/",
+        "downloadUrl": "https://www.npmjs.com/package/nestack",
+        "installUrl": "https://www.npmjs.com/package/nestack",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "Generates a layered NestJS project (domain / infra)",
+          "Prisma with @prisma/adapter-pg driver adapters",
+          "Zod validation",
+          "Swagger documentation",
+          "Vitest tests",
+          "Optional JWT (RS256) authentication",
+          "Code generators for entity, repository, use case, controller, module, DTO, presenter and event"
+        ],
+        "author": {
+          "@type": "Person",
+          "name": "Milagres Marques Luís Bartolomeu"
+        },
+        "sameAs": [
+          "https://github.com/milagresjr/nestack",
+          "https://www.npmjs.com/package/nestack"
+        ]
+      }
+    </script>
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #1a1d21;
+        --muted: #5b6472;
+        --line: #e6e8eb;
+        --brand: #4c6ef5;
+        --brand-dark: #3b5bdb;
+        --code-bg: #f4f5f7;
+        --radius: 12px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      header {
+        border-bottom: 1px solid var(--line);
+        padding: 16px 0;
+      }
+      header .wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .logo {
+        font-weight: 700;
+        font-size: 1.15rem;
+        text-decoration: none;
+        color: var(--fg);
+        letter-spacing: -0.02em;
+      }
+      .nav {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .nav a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.95rem;
+      }
+      .nav a:hover {
+        color: var(--brand);
+      }
+      .nav .lang {
+        font-weight: 600;
+        color: var(--brand);
+      }
+      .hero {
+        padding: 64px 0 40px;
+      }
+      h1 {
+        font-size: clamp(2rem, 5vw, 2.9rem);
+        line-height: 1.15;
+        letter-spacing: -0.03em;
+        margin: 0 0 18px;
+      }
+      .lede {
+        font-size: 1.18rem;
+        color: var(--muted);
+        margin: 0 0 24px;
+        max-width: 46ch;
+      }
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 28px;
+      }
+      .badges img {
+        height: 22px;
+        vertical-align: middle;
+      }
+      .cta {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        display: inline-block;
+        padding: 11px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.98rem;
+        text-decoration: none;
+        border: 1px solid transparent;
+      }
+      .btn-primary {
+        background: var(--brand);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--brand-dark);
+      }
+      .btn-ghost {
+        border-color: var(--line);
+        color: var(--fg);
+      }
+      .btn-ghost:hover {
+        border-color: var(--brand);
+        color: var(--brand);
+      }
+      section {
+        padding: 36px 0;
+        border-top: 1px solid var(--line);
+      }
+      h2 {
+        font-size: 1.5rem;
+        letter-spacing: -0.02em;
+        margin: 0 0 18px;
+      }
+      h3 {
+        font-size: 1.05rem;
+        margin: 0 0 6px;
+      }
+      p {
+        margin: 0 0 14px;
+        color: var(--muted);
+      }
+      a {
+        color: var(--brand);
+      }
+      code {
+        background: var(--code-bg);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 1px 6px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.9em;
+      }
+      pre {
+        background: #1a1d21;
+        color: #e9ecef;
+        padding: 16px 18px;
+        border-radius: var(--radius);
+        overflow-x: auto;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.92rem;
+        line-height: 1.6;
+      }
+      pre code {
+        background: none;
+        border: 0;
+        padding: 0;
+        color: inherit;
+        font-size: inherit;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+      }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 18px;
+      }
+      .card p {
+        margin: 0;
+        font-size: 0.95rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.97rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 11px 12px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      th {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+      }
+      ul.stack {
+        columns: 2;
+        padding-left: 18px;
+        margin: 0;
+      }
+      ul.stack li {
+        margin-bottom: 8px;
+        color: var(--muted);
+        break-inside: avoid;
+      }
+      .steps {
+        counter-reset: step;
+        padding-left: 0;
+        list-style: none;
+        margin: 0;
+      }
+      .steps li {
+        counter-increment: step;
+        position: relative;
+        padding-left: 42px;
+        margin-bottom: 16px;
+        color: var(--muted);
+      }
+      .steps li::before {
+        content: counter(step);
+        position: absolute;
+        left: 0;
+        top: 1px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--brand);
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      footer {
+        border-top: 1px solid var(--line);
+        padding: 28px 0 40px;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      footer a {
+        color: var(--muted);
+      }
+      @media (max-width: 640px) {
+        ul.stack {
+          columns: 1;
+        }
+        .hero {
+          padding: 44px 0 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <a class="logo" href="/nestack/">nestack</a>
+        <nav class="nav">
+          <a href="#install">Install</a>
+          <a href="#commands">Commands</a>
+          <a href="https://www.npmjs.com/package/nestack">npm</a>
+          <a href="https://github.com/milagresjr/nestack">GitHub</a>
+          <a class="lang" href="/nestack/pt/" hreflang="pt-BR">Português</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="wrap hero">
+        <h1>NestJS CLI to create projects with DDD and Prisma</h1>
+        <p class="lede">
+          <code>nestack</code> scaffolds a NestJS application already structured
+          with a layered architecture, Prisma driver adapters, Zod, Swagger,
+          Vitest and optional JWT auth — then keeps evolving it with generators.
+        </p>
+
+        <div class="badges">
+          <img
+            src="https://img.shields.io/npm/v/nestack?label=npm&color=4c6ef5"
+            alt="npm version"
+          />
+          <img
+            src="https://img.shields.io/npm/dm/nestack?label=downloads"
+            alt="npm downloads"
+          />
+          <img src="https://img.shields.io/npm/l/nestack" alt="license" />
+          <img src="https://img.shields.io/node/v/nestack" alt="Node.js" />
+        </div>
+
+        <div class="cta">
+          <a class="btn btn-primary" href="#install">Get started</a>
+          <a
+            class="btn btn-ghost"
+            href="https://github.com/milagresjr/nestack"
+            >View on GitHub</a
+          >
+        </div>
+      </div>
+
+      <section id="install">
+        <div class="wrap">
+          <h2>Install</h2>
+          <p>Globally, or straight from <code>npx</code> without installing:</p>
+          <pre><code>npm install -g nestack
+npx nestack new my-app</code></pre>
+        </div>
+      </section>
+
+      <section id="features">
+        <div class="wrap">
+          <h2>What you get</h2>
+          <div class="grid">
+            <div class="card">
+              <h3>Layered architecture</h3>
+              <p>
+                A domain / infra layout you can keep growing, instead of a flat
+                <code>src/</code> dump.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Prisma driver adapters</h3>
+              <p>
+                <code>@prisma/adapter-pg</code> — no engine binary in the app
+                container.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Validation &amp; docs</h3>
+              <p>Zod schemas with a validation pipe, Swagger out of the box.</p>
+            </div>
+            <div class="card">
+              <h3>Tests wired up</h3>
+              <p>Vitest with unit and e2e configs, aliases and seed helpers.</p>
+            </div>
+            <div class="card">
+              <h3>Optional JWT auth</h3>
+              <p>
+                RS256 tokens, guard, strategy and a <code>@Public()</code>
+                decorator — chosen at creation time.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Generators</h3>
+              <p>
+                Entity, repository, use case, controller, module, DTO,
+                presenter, event or a full resource.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="quickstart">
+        <div class="wrap">
+          <h2>Quick start</h2>
+          <ol class="steps">
+            <li>Create the project: <code>nestack new my-app</code></li>
+            <li>Start Postgres: <code>docker compose up -d --wait</code></li>
+            <li>Run the migration: <code>npx prisma migrate dev --name init</code></li>
+            <li>Boot the API: <code>npm run start:dev</code></li>
+          </ol>
+          <p>
+            The API listens on <code>http://localhost:3333</code> and Swagger on
+            <code>http://localhost:3333/docs</code>.
+          </p>
+        </div>
+      </section>
+
+      <section id="commands">
+        <div class="wrap">
+          <h2>Commands</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>nestack new &lt;name&gt; [--yes]</code></td>
+                <td>Create a Nest project</td>
+              </tr>
+              <tr>
+                <td><code>nestack make:&lt;type&gt; &lt;name&gt;</code></td>
+                <td>Generate file(s) with base code</td>
+              </tr>
+              <tr>
+                <td><code>nestack migrate [name]</code></td>
+                <td>Shortcut for <code>prisma migrate dev</code></td>
+              </tr>
+              <tr>
+                <td><code>nestack db:seed</code></td>
+                <td>Shortcut for <code>prisma db seed</code></td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            Generator types: <code>entity</code>, <code>repository</code>,
+            <code>use-case</code>, <code>controller</code>, <code>module</code>,
+            <code>dto</code>, <code>presenter</code>, <code>event</code>,
+            <code>resource</code>.
+          </p>
+          <pre><code>nestack make:entity user -m forum
+nestack make:use-case create-user -m forum
+nestack make:resource user -m forum</code></pre>
+        </div>
+      </section>
+
+      <section id="stack">
+        <div class="wrap">
+          <h2>Generated stack</h2>
+          <ul class="stack">
+            <li>NestJS</li>
+            <li>Prisma + <code>@prisma/adapter-pg</code></li>
+            <li>PostgreSQL</li>
+            <li>Zod (validation)</li>
+            <li>Swagger (documentation)</li>
+            <li>Vitest (tests)</li>
+            <li>bcryptjs (hashing)</li>
+            <li>Optional JWT RS256</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="links">
+        <div class="wrap">
+          <h2>Links</h2>
+          <p>
+            <a href="https://www.npmjs.com/package/nestack">npm package</a> ·
+            <a href="https://github.com/milagresjr/nestack"
+              >GitHub repository</a
+            >
+            ·
+            <a href="https://github.com/milagresjr/nestack#readme"
+              >Full README</a
+            >
+            · <a href="/nestack/pt/">Em português</a>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <p>
+          <code>nestack</code> is released under the
+          <a href="https://github.com/milagresjr/nestack/blob/main/LICENSE"
+            >MIT license</a
+          >
+          · © Milagres Marques Luís Bartolomeu
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
