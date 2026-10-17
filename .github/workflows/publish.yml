@@ -21,7 +21,11 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
 
+      # Staged publishing exige npm >= 11.15.0.
+      - run: npm install -g npm@latest
+
       - run: npm ci
 
-      # O npm detecta o ambiente OIDC automaticamente e publica com provenance.
-      - run: npm publish
+      # O npm detecta o ambiente OIDC e envia a versão para a fila de staging.
+      # Um mantenedor precisa aprovar (com 2FA) para a versão ficar disponível.
+      - run: npm stage publish

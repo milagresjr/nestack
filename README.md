@@ -105,28 +105,36 @@ nestack db:seed                          Atalho para prisma db seed
 
 ## Publicação (mantenedores)
 
-O release é feito por tag, via GitHub Actions com **Trusted Publishing (OIDC)** (`.github/workflows/publish.yml`):
+O release é feito por tag. O GitHub Actions usa **Trusted Publishing (OIDC)** com
+**staged publishing** (`.github/workflows/publish.yml`): o CI envia a versão para a
+fila de staging e um mantenedor aprova com 2FA antes de ela ficar disponível.
 
 ```bash
 npm version patch   # ou minor/major (cria o commit e a tag)
 git push --follow-tags
 ```
 
-O push da tag `v*` dispara o workflow, que publica no npm usando OIDC e gera provenance automaticamente (sem token).
+O push da tag `v*` dispara o workflow, que envia a versão para a fila usando OIDC
+(sem token e com provenance). Para liberar a versão:
+
+- npmjs.com → **Packages → nestack → Versions** (entrada em staging), ou
+- `npm stage approve <versão>`
 
 Pré-requisitos (uma vez):
 
-1. Publicar a primeira versão manualmente (`npm publish`).
+1. Publicar a primeira versão manualmente (`npm publish`, exige 2FA na conta dona do
+   pacote no npm — hoje `milagrestobjr`).
 2. No npmjs.com → **Pacote → Settings → Trusted Publisher** → GitHub Actions, informar:
    - Organization/user: `milagresjr`
    - Repository: `nestack`
    - Workflow filename: `publish.yml`
-   - Allowed actions: `npm publish`
+   - Allowed actions: `npm stage publish` (já vem marcado; habilite `npm publish`
+     somente se quiser publicar direto, sem aprovação)
 
 Equivalente via CLI (após a 1ª publicação):
 
 ```bash
-npm trust github nestack --file publish.yml --repo milagresjr/nestack --allow-publish
+npm trust github nestack --file publish.yml --repo milagresjr/nestack --allow-stage-publish
 ```
 
 ## Licença
