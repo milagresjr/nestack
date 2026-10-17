@@ -1,0 +1,15 @@
+{
+  "name": "nestack",
+  "version": "0.1.0",
+  "description": "CLI para criar e evoluir projetos NestJS com DDD e Prisma",
+  "type": "module",
+  "bin": { "nestack": "bin/nestack.js" },
+  "files": ["bin", "src", "templates"],
+  "keywords": ["nestjs", "nest", "prisma", "ddd", "scaffold", "cli", "generator", "boilerplate"],
+  "license": "MIT",
+  "author": "Milagres Marques Luís Bartolomeu <milagresmarquees@gmail.com>",
+  "repository": { "type": "git", "url": "git+https://github.com/milagresjr/nestack.git" },
+  "homepage": "https://github.com/milagresjr/nestack#readme",
+  "bugs": { "url": "https://github.com/milagresjr/nestack/issues" },
+  "engines": { "node": ">=18" }
+}
